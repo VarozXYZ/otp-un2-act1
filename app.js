@@ -69,6 +69,16 @@ app.put("/characters/:id", (req, res) => {
     res.sendStatus(204);
 })
 
+app.delete("/characters/:id", (req, res) => {
+    const idToDelete= req.params.id;
+    const char = db.find(c => c.id == idToDelete);
+    if (!char) {
+        return res.status(404).send("Character does not exist");
+    };
+    db = db.filter(c => c.id != idToDelete);
+    res.sendStatus(204);
+})
+
 app.listen(8080, () => {
     console.log("Final Fantasy VII Remake character manager started (Port: 8080)")
 })
