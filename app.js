@@ -14,33 +14,33 @@ app.get("/characters", (req, res) => {
 })
 
 app.get("/characters/:id", (req, res) => {
-    db.forEach(character => {
-        if (character.id == req.params.id) {
-            res.send(character)
-        }
-    })
-    res.status(404).send("Character ID not found on database");
+    const character = db.find(c => c.id == req.params.id);
+    if (character) {
+        res.send(character);
+    } else {
+        res.status(404).send("Character ID not found on database");
+    }
 })
 
 app.post("/characters", (req, res) => {
     const newChar = req.body;
     if (!newChar) {
-        res.status(400).send("Empty character data")
+        return res.status(400).send("Empty character data");
     }
-    let unique = true;
-    db.forEach(character => {
-        if (newChar.id == character.id || newChar.name == character.name) {
-            unique = false;
+    for (const character of db) {
+        if (newChar.id == character.id) {
+            return res.status(400).send("Repeated character ID");
         }
-    })
-    if (!unique) {
-        res.status(400).send("Repeated character ID or name")
-    } else if (newChar.level < 1 || newChar.level > 100) {
-        res.status(400).send("Level must be between 1 and 99")
-    } else {
-        db.push(newChar);
-        res.send("Character added successfully");
+        if (newChar.name == character.name) {
+            return res.status(400).send("Repeated character name");
+        }
     }
+    if (newChar.level < 1 || newChar.level > 100) {
+        return res.status(400).send("Level must be between 1 and 99");
+    }
+    
+    db.push(newChar);
+    res.send("Character added successfully");
 })
 
 app.listen(8080, () => {
