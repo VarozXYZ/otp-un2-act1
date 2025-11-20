@@ -1,0 +1,13 @@
+html 
+    head
+        title Character list 
+    body
+        h1 Character list
+        a(href=`/new`) New character 
+
+        if db.length == 0
+            p There are no characters 
+        else 
+            ul 
+                each character in db
+                    li #{character.name} (level #{character.level})

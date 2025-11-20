@@ -8,6 +8,9 @@ let db = [
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded());
+app.set('view engine', 'pug')
+app.set('views', './views');
 
 app.get("/characters", (req, res) => {
     res.send(db);
@@ -35,7 +38,7 @@ app.post("/characters", (req, res) => {
             return res.status(400).send("Repeated character name");
         }
     }
-    if (newChar.level < 1 || newChar.level > 100) {
+    if (newChar.level < 1 || newChar.level > 99) {
         return res.status(400).send("Level must be between 1 and 99");
     }
     
@@ -61,7 +64,7 @@ app.put("/characters/:id", (req, res) => {
             return res.status(400).send("Repeated character ID");
         }
     }
-    if (newData.level < 1 || newData.level > 100) {
+    if (newData.level < 1 || newData.level > 99) {
         return res.status(400).send("Level must be between 1 and 99");
     }
     db = newDb;
@@ -77,6 +80,23 @@ app.delete("/characters/:id", (req, res) => {
     };
     db = db.filter(c => c.id != idToDelete);
     res.sendStatus(204);
+})
+
+app.get("/index", (req, res) => {
+    res.render("index")
+})
+
+app.get("/list", (req, res) => {
+    res.render("list", { db: db })
+})
+
+app.get("/new", (req, res) => {
+    res.render("new")
+})
+
+app.post("/createNew", (req, res) => {
+    db.push(req.body);
+    res.redirect("/list");
 })
 
 app.listen(8080, () => {
